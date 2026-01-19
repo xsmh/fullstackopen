@@ -1,17 +1,62 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
+import axios from "axios";
+
+const Filter = (props) => {
+  return (
+    <div>
+      filter shown with <input
+        value={props.value}
+        onChange={props.onChange}
+      />
+    </div>
+  )
+}
+
+const Form = (props) => {
+  return (
+    <form onSubmit={props.onSubmit}>
+      <div>
+        name:
+        <input
+          value={props.nameValue}
+          onChange={props.nameOnChange}
+        />
+      </div>
+      <div>
+        number:
+        <input
+          value={props.numberValue}
+          onChange={props.numberOnChange}
+        />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
+const Persons = (props) => {
+  return (
+    <div>{props.showPersons}</div>
+  )
+}
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-
-  ])
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
 
+  const effect = () => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then(response => {
+        setPersons(response.data);
+      })
+
+  }
+  useEffect(effect, []);
   const addPerson = (event) => {
     event.preventDefault();
     const newPerson = {
@@ -46,47 +91,23 @@ const App = () => {
   }
 
   const showPersons = () => {
-    const filteredPerson = persons.find((person) => person === newFilter.toLowerCase());
-    console.log(filteredPerson)
+    const filteredPerson = persons.find((person) => person.name.toLowerCase() === newFilter.toLowerCase());
     if (newFilter !== "" && filteredPerson) {
-      return (<div>{filteredPerson.name} {filteredPerson.number}</div>)
+      return <div>{filteredPerson.name} {filteredPerson.number}</div>
     } else {
-      return (persons.map((person) => <div key={person.id}>{person.name} {person.number}</div>))
+      return persons.map((person) => { return (<div key={person.id}>{person.name} {person.number}</div>) })
     }
   }
   return (
     <div>
-      <div>debug {newFilter}</div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input
-          value={newFilter}
-          onChange={handleFilterChange}
-        />
-      </div>
+      <Filter value={newFilter} onChange={handleFilterChange} />
       <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name:
-          <input
-            value={newName}
-            onChange={handleNameChange}
-          />
-        </div>
-        <div>
-          number:
-          <input
-            value={newNumber}
-            onChange={handleNumberChange}
-          />
-
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form onSubmit={addPerson} nameValue={newName}
+        nameOnChange={handleNameChange} numberValue={newNumber} numberOnChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      {showPersons}
+      <Persons showPersons={showPersons()} />
     </div>
   )
 }
