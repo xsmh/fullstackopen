@@ -1,45 +1,4 @@
-import { useState } from 'react';
-
-const Filter = (props) => {
-  return (
-    <div>
-      filter shown with <input
-        value={props.value}
-        onChange={props.onChange}
-      />
-    </div>
-  )
-}
-
-const Form = (props) => {
-  return (
-    <form onSubmit={props.onSubmit}>
-      <div>
-        name:
-        <input
-          value={props.nameValue}
-          onChange={props.nameOnChange}
-        />
-      </div>
-      <div>
-        number:
-        <input
-          value={props.numberValue}
-          onChange={props.numberOnChange}
-        />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
-
-const Persons = (props) => {
-  return (
-    <div>{props.showPersons}</div>
-  )
-}
+import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -87,23 +46,47 @@ const App = () => {
   }
 
   const showPersons = () => {
-    const filteredPerson = persons.find((person) => person.name.toLowerCase() === newFilter.toLowerCase());
+    const filteredPerson = persons.find((person) => person === newFilter.toLowerCase());
+    console.log(filteredPerson)
     if (newFilter !== "" && filteredPerson) {
-      return <div>{filteredPerson.name} {filteredPerson.number}</div>
+      return (<div>{filteredPerson.name} {filteredPerson.number}</div>)
     } else {
-      return persons.map((person) => { return (<div key={person.id}>{person.name} {person.number}</div>) })
+      return (persons.map((person) => <div key={person.id}>{person.name} {person.number}</div>))
     }
   }
   return (
     <div>
+      <div>debug {newFilter}</div>
       <h2>Phonebook</h2>
-      <Filter value={newFilter} onChange={handleFilterChange} />
+      <div>
+        filter shown with <input
+          value={newFilter}
+          onChange={handleFilterChange}
+        />
+      </div>
       <h2>add a new</h2>
-      <Form onSubmit={addPerson} nameValue={newName}
-        nameOnChange={handleNameChange} numberValue={newNumber} numberOnChange={handleNumberChange}
-      />
+      <form onSubmit={addPerson}>
+        <div>
+          name:
+          <input
+            value={newName}
+            onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          number:
+          <input
+            value={newNumber}
+            onChange={handleNumberChange}
+          />
+
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
       <h2>Numbers</h2>
-      <Persons showPersons={showPersons()} />
+      {showPersons}
     </div>
   )
 }
