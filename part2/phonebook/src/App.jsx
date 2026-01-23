@@ -37,8 +37,12 @@ const Form = (props) => {
 }
 
 const Persons = (props) => {
+  return <div>{props.showPersons}</div>
+}
+
+const DeleteButton = ({ deletePerson }) => {
   return (
-    <div>{props.showPersons}</div>
+    <button onClick={deletePerson}>delete</button>
   )
 }
 
@@ -60,7 +64,7 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
+      id: String(persons.length + 1)
     }
     const personAlreadyExists = persons.some((person) => person.name === newPerson.name);
     if (personAlreadyExists) {
@@ -88,12 +92,27 @@ const App = () => {
     setNewFilter(event.target.value);
   }
 
+  const deletePerson = (id) => {
+    personService.remove(id)
+      .then(response => {
+        setPersons(persons.filter(person => person.id !== id));
+      })
+      .catch(error => console.error(error))
+  }
+
   const showPersons = () => {
+    console.log(persons)
     const filteredPerson = persons.find((person) => person.name.toLowerCase() === newFilter.toLowerCase());
     if (newFilter !== "" && filteredPerson) {
       return <div>{filteredPerson.name} {filteredPerson.number}</div>
     } else {
-      return persons.map((person) => { return (<div key={person.id}>{person.name} {person.number}</div>) })
+      return persons.map((person) => {
+        return (
+          <div key={person.id}>{person.name} {person.number}
+            <DeleteButton deletePerson={() => deletePerson(person.id)} />
+          </div>
+        )
+      })
     }
   }
   return (
