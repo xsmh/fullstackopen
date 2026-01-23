@@ -92,12 +92,14 @@ const App = () => {
     setNewFilter(event.target.value);
   }
 
-  const deletePerson = (id) => {
-    personService.remove(id)
-      .then(response => {
-        setPersons(persons.filter(person => person.id !== id));
-      })
-      .catch(error => console.error(error))
+  const deletePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService.remove(id)
+        .then(response => {
+          setPersons(persons.filter(person => person.id !== id));
+        })
+        .catch(error => console.error(error))
+    }
   }
 
   const showPersons = () => {
@@ -109,7 +111,7 @@ const App = () => {
       return persons.map((person) => {
         return (
           <div key={person.id}>{person.name} {person.number}
-            <DeleteButton deletePerson={() => deletePerson(person.id)} />
+            <DeleteButton deletePerson={() => deletePerson(person.id, person.name)} />
           </div>
         )
       })
