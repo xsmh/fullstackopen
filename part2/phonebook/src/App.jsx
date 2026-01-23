@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from "axios";
+import personService from "./services/persons"
 
 const Filter = (props) => {
   return (
@@ -49,12 +49,10 @@ const App = () => {
   const [newFilter, setNewFilter] = useState("");
 
   const effect = () => {
-    axios
-      .get("http://localhost:3001/persons")
+    personService.getAll()
       .then(response => {
-        setPersons(response.data);
+        setPersons(response);
       })
-
   }
   useEffect(effect, []);
   const addPerson = (event) => {
@@ -65,16 +63,16 @@ const App = () => {
       id: persons.length + 1
     }
     const personAlreadyExists = persons.some((person) => person.name === newPerson.name);
-    console.log(personAlreadyExists);
-    console.log("persons", persons)
-    persons.map((person) => console.log(person))
     if (personAlreadyExists) {
-      console.log("Person already exists...");
       window.alert(`${newName} already exists`);
     } else {
-      setPersons(persons.concat(newPerson));
-      setNewName("");
-      setNewNumber("");
+      personService.create(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response));
+          setNewName("");
+          setNewNumber("");
+        }
+        )
     }
   }
 
