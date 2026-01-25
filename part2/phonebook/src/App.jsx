@@ -61,14 +61,21 @@ const App = () => {
   useEffect(effect, []);
   const addPerson = (event) => {
     event.preventDefault();
-    const newPerson = {
+    let newPerson = {
       name: newName,
       number: newNumber,
       id: String(persons.length + 1)
     }
     const personAlreadyExists = persons.some((person) => person.name === newPerson.name);
     if (personAlreadyExists) {
-      window.alert(`${newName} already exists`);
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const targetPerson = persons.filter(person => person.name === newPerson.name);
+        newPerson.id = targetPerson[0].id;
+        personService.update(newPerson.id, newPerson)
+          .then(response => {
+            setPersons(persons.map(person => { if (person.id === newPerson.id) { person = response } return person }))
+          })
+      }
     } else {
       personService.create(newPerson)
         .then(response => {
@@ -103,7 +110,6 @@ const App = () => {
   }
 
   const showPersons = () => {
-    console.log(persons)
     const filteredPerson = persons.find((person) => person.name.toLowerCase() === newFilter.toLowerCase());
     if (newFilter !== "" && filteredPerson) {
       return <div>{filteredPerson.name} {filteredPerson.number}</div>
