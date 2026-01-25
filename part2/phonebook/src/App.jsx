@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import personService from "./services/persons"
+import Notification from "./components/Notification";
 
 const Filter = (props) => {
   return (
@@ -51,6 +52,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notification, setNotification] = useState(null);
 
   const effect = () => {
     personService.getAll()
@@ -73,8 +75,17 @@ const App = () => {
         newPerson.id = targetPerson[0].id;
         personService.update(newPerson.id, newPerson)
           .then(response => {
-            setPersons(persons.map(person => { if (person.id === newPerson.id) { person = response } return person }))
+            setPersons(persons.map(person => {
+              if (person.id === newPerson.id) {
+                person = response
+              }
+              return person
+            }))
           })
+        setNotification("Number changed!");
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)
       }
     } else {
       personService.create(newPerson)
@@ -82,6 +93,10 @@ const App = () => {
           setPersons(persons.concat(response));
           setNewName("");
           setNewNumber("");
+          setNotification("New person added!");
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
         }
         )
     }
@@ -125,6 +140,7 @@ const App = () => {
   }
   return (
     <div>
+      <Notification message={notification} />
       <h2>Phonebook</h2>
       <Filter value={newFilter} onChange={handleFilterChange} />
       <h2>add a new</h2>
