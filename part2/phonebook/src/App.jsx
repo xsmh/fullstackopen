@@ -81,11 +81,17 @@ const App = () => {
               }
               return person
             }))
+            setNotification("Number changed!");
+            setTimeout(() => {
+              setNotification(null)
+            }, 3000)
           })
-        setNotification("Number changed!");
-        setTimeout(() => {
-          setNotification(null)
-        }, 3000)
+          .catch(error => {
+            setNotification(`Info of ${newPerson.name} has already been removed from server.`)
+            setTimeout(() => {
+              setNotification(null)
+            }, 3000)
+          })
       }
     } else {
       personService.create(newPerson)
