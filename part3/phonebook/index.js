@@ -6,7 +6,7 @@ const port = 3001;
 
 app.use(express.json());
 app.use(morgan('tiny'));
-// app.use(express.static('public'))
+app.use(express.static('public'))
 let persons = [
   {
     "id": "1",
