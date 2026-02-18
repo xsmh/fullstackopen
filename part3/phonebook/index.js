@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const morgan = require("morgan");
 const Person = require("./models/person");
 
@@ -8,8 +7,8 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
-app.use(morgan('tiny'));
-app.use(express.static('public'))
+app.use(morgan("tiny"));
+app.use(express.static("public"));
 
 app.get("/api/persons", (req, res, next) => {
   Person.find({})
@@ -59,7 +58,7 @@ app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   Person.findByIdAndDelete(id)
     .then(result => {
-      response.status(204).end();
+      res.status(204).end();
     })
     .catch(error => next(error));
 });
@@ -67,11 +66,12 @@ app.delete("/api/persons/:id", (req, res, next) => {
 const errorHandler = (error, res, req, next) => {
   console.error(error.message);
   if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformed id" })
+    return res.status(400).send({ error: "malformed id" });
   }
 
   next(error);
-}
+};
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log("Running the server");
