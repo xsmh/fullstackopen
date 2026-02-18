@@ -11,7 +11,8 @@
     "dev": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf public && cd ../phonebook-frontend && npm run build && cp -r dist ../phonebook/public",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push -u origin master"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push -u origin master",
+    "lint": "eslint ."
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -19,5 +20,11 @@
     "express": "^5.2.1",
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.8.0",
+    "eslint": "^10.0.0",
+    "globals": "^17.3.0"
   }
 }
