@@ -12,19 +12,19 @@ app.use(express.static("public"));
 
 app.get("/api/persons", (req, res, next) => {
   Person.find({})
-    .then(people => {
+    .then((people) => {
       res.json(people);
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   Person.findById(id)
-    .then(person => {
+    .then((person) => {
       res.json(person);
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 app.get("/info", (req, res) => {
@@ -37,7 +37,7 @@ app.post("/api/persons", (req, res, next) => {
   const body = req.body;
   if (!body.name || !body.number) {
     return res.status(400).json({
-      error: "name or number missing"
+      error: "name or number missing",
     });
   }
 
@@ -46,21 +46,21 @@ app.post("/api/persons", (req, res, next) => {
     number: body.number,
   });
 
-  person.save()
-    .then(savedPerson => {
+  person
+    .save()
+    .then((savedPerson) => {
       res.json(savedPerson);
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
-
 
 app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   Person.findByIdAndDelete(id)
-    .then(result => {
+    .then((result) => {
       res.status(204).end();
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 const errorHandler = (error, res, req, next) => {
