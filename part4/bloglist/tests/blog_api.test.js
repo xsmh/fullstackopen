@@ -1,41 +1,41 @@
-const { test, after, beforeEach } = require('node:test')
-const assert = require('node:assert')
-const mongoose = require('mongoose')
-const supertest = require('supertest')
-const app = require('../app')
+const { test, after, beforeEach } = require("node:test");
+const assert = require("node:assert");
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
 const helper = require("./test_helper");
 const Blog = require("../models/blog");
 
-const api = supertest(app)
+const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
 });
 
-test('blogs are returned as json', async () => {
+test("blogs are returned as json", async () => {
   await api
-    .get('/api/blogs')
+    .get("/api/blogs")
     .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+    .expect("Content-Type", /application\/json/);
+});
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
+test("all blogs are returned", async () => {
+  const response = await api.get("/api/blogs");
 
-  assert.strictEqual(response.body.length, 2)
-})
+  assert.strictEqual(response.body.length, 2);
+});
 
-test('unique identifier is named id', async () => {
-  const response = await api.get('/api/blogs')
+test("unique identifier is named id", async () => {
+  const response = await api.get("/api/blogs");
   const firstItem = response.body[0];
-  const hasDefaultId = Object.hasOwn(firstItem, '_id');
-  const hasRenamedId = Object.hasOwn(firstItem, 'id');
-  assert.strictEqual(hasRenamedId, true)
-  assert.strictEqual(hasDefaultId, false)
-})
+  const hasDefaultId = Object.hasOwn(firstItem, "_id");
+  const hasRenamedId = Object.hasOwn(firstItem, "id");
+  assert.strictEqual(hasRenamedId, true);
+  assert.strictEqual(hasDefaultId, false);
+});
 
-test("a blog can be added ", async () => {
+test("a blog can be added", async () => {
   const newBlog = {
     title: "blog3",
     author: "author3",
@@ -53,6 +53,18 @@ test("a blog can be added ", async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
 });
 
+test("a blog can be deleted", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const ids = blogsAtEnd.map((n) => n.id);
+  assert(!ids.includes(blogToDelete.id));
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+});
+
 after(async () => {
-  await mongoose.connection.close()
-})
+  await mongoose.connection.close();
+});
