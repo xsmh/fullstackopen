@@ -12,7 +12,9 @@ blogsRouter.post("/", async (request, response) => {
   request.body.user = user._id;
   const blog = await new Blog(request.body);
   console.log(blog);
-  const result = blog.save();
+  const result = await blog.save();
+  user.blogs = user.blogs.concat(result._id);
+  await user.save();
   return response.status(201).json(result);
 });
 
